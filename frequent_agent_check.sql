@@ -1,3 +1,7 @@
+USE MSDB
+
+GO
+
 IF NOT EXISTS (SELECT name FROM master..sys.databases where name = 'DBA_Tasks')
 	
 	BEGIN
@@ -83,7 +87,8 @@ BEGIN
 						ON SShed.schedule_id = SSch.schedule_id
 
 					WHERE 
-					[sSCH].[schedule_uid] IS NOT NULL --Job is scheduled
+					[sJOB].Active = 1 --Make sure that the job is actually active
+					AND [sSCH].[schedule_uid] IS NOT NULL --Job is scheduled
 					AND [SShed].[freq_subday_type] = 4 --Jobs that run every x minutes
 					AND [SShed].[freq_subday_interval] < 60 --Jobs that run less than every 60 minutes
 
