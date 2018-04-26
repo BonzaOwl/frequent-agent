@@ -2,17 +2,34 @@ USE MSDB
 
 GO
 
-IF NOT EXISTS (SELECT name FROM master..sys.databases where name = 'DBA_Tasks')
+IF DB_ID('DBA_Tasks') IS NULL
 	
 	BEGIN
 
-		Print 'A Database with the name DBA_Tasks is required, you can create it or edit this script to match your environment'
+		CREATE DATABASE DBA_Tasks
+
+	END
+
+	ELSE
+
+	BEGIN
+
+		Print 'DBA_Tasks already exists in your environment'
 
 	END
 
 USE DBA_Tasks
 
-IF NOT EXISTS (SELECT name FROM sys.tables where name = 'JobHistory_Archive')
+IF SCHEMA_ID('DBA') IS NULL
+
+	BEGIN 
+
+		EXEC ('CREATE SCHEMA [DBA] AUTHORIZATION [DBO]');
+
+	END
+
+
+IF OBJECT_ID ('DBA.JobHistory_Archive') IS NULL
 
 	BEGIN
 
@@ -29,10 +46,19 @@ IF NOT EXISTS (SELECT name FROM sys.tables where name = 'JobHistory_Archive')
 
 	END
 
-IF EXISTS(SELECT name FROM sys.procedures where name = 'p_Cleanup_Frequent_Job_History')
+	ELSE
+
+	BEGIN
+
+		Print 'Great, the table already exists'
+
+	END
+
+IF OBJECT_ID ('DBA.p_Cleanup_Frequent_Job_History') IS NULL
 
 	BEGIN 
 
+		Print 'The stored procedure already exists, we are going to drop it and re-create'
 		DROP PROCEDURE [DBA].[p_Cleanup_Frequent_Job_History]
 
 	END
